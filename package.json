@@ -1,15 +1,17 @@
 {
   "name": "databases",
   "version": "0.0.0",
-  "main": "SQL/persistent-server.js",
+  "main": "ORM_Refactor/persistent-server.js",
   "dependencies": {
     "bluebird": "^2.3.0",
     "chai": "^1.9.1",
     "mocha": "^1.21.4",
     "mysql": "^2.5.1",
-    "request": "^2.40.0"
+    "nodemon": "^1.2.1",
+    "request": "^2.40.0",
+    "sequelize": "^2.0.0-rc1"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -R dot SQL/spec/LiveSpec.js"
+    "test": "./node_modules/mocha/bin/mocha -R dot ORM_Refactor/spec/LiveSpec.js"
   }
 }

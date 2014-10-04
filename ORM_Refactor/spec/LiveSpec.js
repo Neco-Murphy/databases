@@ -11,9 +11,9 @@ describe("Persistent Node Chat Server", function() {
   beforeEach(function(done) {
     dbConnection = mysql.createConnection({
       // TODO: Fill this out with your mysql username
-      user: "hrw805",
+      user: "root",
       // and password.
-      password: "hrw805",
+      password: "",
       database: "chat"
     });
     dbConnection.connect();
@@ -55,7 +55,6 @@ describe("Persistent Node Chat Server", function() {
                   /* TODO: You will need to change these tests if the
                    * column names in your schema are different from
                    * mine! */
-
                   done();
                 });
             });
@@ -63,7 +62,7 @@ describe("Persistent Node Chat Server", function() {
 
   it("Should output all messages from the DB", function(done) {
     // Let's insert a message into the db
-    var queryString = "insert into messages (userid, message, roomname) values (1, 'Men like you can never change!', 'main');";
+    var queryString = "insert into messages (userid, message, roomname, createdAt, updatedAt) values (1, 'Men like you can never change!', 'main', UTC_TIMESTAMP(), UTC_TIMESTAMP());";
     var queryArgs = [];
     /* TODO - The exact query string and query args to use
      * here depend on the schema you design, so I'll leave

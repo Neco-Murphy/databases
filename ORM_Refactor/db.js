@@ -6,7 +6,7 @@ var Sequelize = require('sequelize');
 /* You'll need to fill the following out with your mysql username and password.
  * database: "chat" specifies that we're using the database called
  * "chat", which we created by running schema.sql.*/
-var sequelize = new Sequelize("chat", "hrw805", "hrw805");
+var sequelize = new Sequelize("chat", "root", "");
 
 var User = sequelize.define('User', {
   username: Sequelize.STRING
@@ -23,7 +23,7 @@ User.sync()
     if (!!err) {
       console.log('An error occurred while creating the table:', err);
     } else {
-      console.log('It worked!');
+      console.log('Created the table users!');
     }
   });
 Message.sync()
@@ -31,16 +31,16 @@ Message.sync()
     if (!!err) {
       console.log('An error occurred while creating the table:', err);
     } else {
-      console.log('It worked!');
+      console.log('Created the table messages!');
     }
   });
 
-// User.hasMany(Message, {foreignKey: 'messageid'});
-// Message.belongsTo(User, {foreignKey: 'userid'});
+User.hasMany(Message, {foreignKey: 'id'});
+Message.belongsTo(User, {foreignKey: 'userid'});
 
 exports.findAllMessages = function(cb){
   var out = {results: []};
-  Message.findAll({ where: { 'userid': User.id }, include: [User]}).complete(function(err, rows){
+  Message.findAll({include: [User]}).complete(function(err, rows){
     //rows[0] = {
     //  id:
     //  message:
@@ -53,14 +53,14 @@ exports.findAllMessages = function(cb){
     //  users.createdAt:
     //  users.modifiedAt:
     //}
-    if (err) { console.log('findAllMessages error', err) };
+    if (err) { console.log('findAllMessages error', err) }
     for (var i = 0; i < rows.length; i++){
       rows[i] = {
-        messageid: rows[i]['id'],
-        username: rows[i]['Users.username'],
-        message: rows[i]['message'],
-        roomname: rows[i]['roomname'],
-        createdAt: rows[i]['createdAt']
+        messageid: rows[i]['dataValues']['id'],
+        username: rows[i]['dataValues']['Users.username'],
+        message: rows[i]['dataValues']['message'],
+        roomname: rows[i]['dataValues']['roomname'],
+        createdAt: rows[i]['dataValues']['createdAt']
       };
     }
     out.results = rows;
@@ -71,9 +71,9 @@ exports.findAllMessages = function(cb){
 };
 
 exports.findUser = function(username, cb){
-  User.findAll({ where: {'username': username}}).complete(function(err, users){
+  User.find({ where: {'username': username}}).complete(function(err, user){
     if (err) { console.log('findUser error', err); }
-    cd(err, users);
+    cb(err, [user.dataValues]);
   });
   // dbConnection.query("SELECT userid as id from users where username = '" + username + "';", function(err, rows) {
   //   cb(err, rows);

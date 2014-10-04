@@ -13,29 +13,29 @@ exports.postMessage = function(req, res) {
   var message;
 
   var resultsCallback = function (results) {
-      var chat = {
-        message: message.message,
-        userid: results[0].id,
-        roomname: message.roomname
-      };
+    var chat = {
+      message: message.message,
+      userid: results[0].id,
+      roomname: message.roomname
+    };
 
-      saveMessage(chat.message, chat.userid, chat.roomname, function () {
-        serverHelpers.sendResponse(res, message);
-      });
+    saveMessage(chat.message, chat.userid, chat.roomname, function () {
+      serverHelpers.sendResponse(res, message);
+    });
   };
 
   parseData(req, function(_, msg) {
-      message = msg;
-      findUser(msg.username, function (err, results) {
-        // no results/0 results
-        if (!results || !results.length) {
-          // create the user, then post the message
-          saveUser(message.username, resultsCallback);
-        } else {
-          // user exists, post the message to this user
-          resultsCallback(results);
-        }
-      });
+    message = msg;
+    findUser(msg.username, function (err, results) {
+      // no results/0 results
+      if (!results || !results.length) {
+        // create the user, then post the message
+        saveUser(message.username, resultsCallback);
+      } else {
+        // user exists, post the message to this user
+        resultsCallback(results);
+      }
+    });
   });
 };
 
