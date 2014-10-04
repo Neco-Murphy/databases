@@ -26,6 +26,7 @@ exports.postMessage = function(req, res) {
 
   parseData(req, function(_, msg) {
       message = msg;
+      console.log(msg)
       findUser(msg.username, function (err, results) {
         // no results/0 results
         if (!results || !results.length) {
