@@ -40,7 +40,7 @@ Message.belongsTo(User, {foreignKey: 'userid'});
 
 exports.findAllMessages = function(cb){
   var out = {results: []};
-  Message.findAll({include: [User]}).complete(function(err, rows){
+  Message.findAll({include: [User], order: 'createdAt desc'}).complete(function(err, rows){
     //rows[0] = {
     //  id:
     //  message:
@@ -53,18 +53,22 @@ exports.findAllMessages = function(cb){
     //  users.createdAt:
     //  users.modifiedAt:
     //}
-    if (err) { console.log('findAllMessages error', err) }
-    for (var i = 0; i < rows.length; i++){
-      rows[i] = {
-        messageid: rows[i]['dataValues']['id'],
-        username: rows[i]['dataValues']['Users.username'],
-        message: rows[i]['dataValues']['message'],
-        roomname: rows[i]['dataValues']['roomname'],
-        createdAt: rows[i]['dataValues']['createdAt']
-      };
+    if (err) { console.log('findAllMessages error', err); }
+    if (rows === null) {
+      cb(err);
+    } else {
+      for (var i = 0; i < rows.length; i++){
+        rows[i] = {
+          messageid: rows[i]['dataValues']['id'],
+          username: rows[i]['dataValues']['User']['username'],
+          message: rows[i]['dataValues']['message'],
+          roomname: rows[i]['dataValues']['roomname'],
+          createdAt: rows[i]['dataValues']['createdAt']
+        };
+      }
+      out.results = rows;
+      cb(err, out);
     }
-    out.results = rows;
-    cb(err, out);
   });
   // dbConnection.query("SELECT u.username, m.message, m.roomname, m.createdAt, m.messageid from messages m join users u on m.userid = u.userid order by createdAt desc limit 100;", function(err, rows) {
   // });
@@ -73,7 +77,11 @@ exports.findAllMessages = function(cb){
 exports.findUser = function(username, cb){
   User.find({ where: {'username': username}}).complete(function(err, user){
     if (err) { console.log('findUser error', err); }
-    cb(err, [user.dataValues]);
+    if (user === null) {
+      cb(err);
+    } else {
+      cb(err, [user.dataValues]);
+    }
   });
   // dbConnection.query("SELECT userid as id from users where username = '" + username + "';", function(err, rows) {
   //   cb(err, rows);
@@ -83,7 +91,7 @@ exports.findUser = function(username, cb){
 exports.saveUser = function(username, cb){
   User.create({'username': username}).complete(function(err, user){
     if (err) { console.log('saveUser error', err); }
-    cb(user);
+    cb([user.dataValues]);
   });
   // dbConnection.query("insert into users (username) values ('" + username + "');", function(err, rows){
   //   if (err) {console.log(err, username);}
